@@ -1,0 +1,86 @@
+# =========================
+# OS / Editor junk
+# =========================
+.DS_Store
+Thumbs.db
+*.log
+*.swp
+*.swo
+.idea/
+.vscode/
+*.code-workspace
+
+# =========================
+# Env / secrets
+# =========================
+.env
+.env.local
+.env.*.local
+*.env
+
+# =========================
+# Python / Flask
+# =========================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.db
+*.sqlite3
+instance/
+.venv/
+venv/
+env/
+ENV/
+.mypy_cache/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# If you use Alembic
+migrations/versions/*.pyc
+migrations/versions/__pycache__/
+
+# =========================
+# Node / Vue 3 / Vite
+# =========================
+node_modules/
+dist/
+dist-ssr/
+*.local
+vite.config.ts.timestamp-*
+pnpm-lock.yaml
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# =========================
+# Build / cache
+# =========================
+*.egg-info/
+.eggs/
+build/
+develop-eggs/
+dist/
+.cache/
+.tmp/
+
+# =========================
+# Frontend assets generated
+# =========================
+*.sass-cache
+*.npm
+*.tsbuildinfo
+
+# =========================
+# Docker
+# =========================
+docker-data/
+docker-compose.override.yml
+
+# =========================
+# Coverage / reports
+# =========================
+coverage.xml
+.junit/
+reports/
