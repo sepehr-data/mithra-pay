@@ -1,0 +1,56 @@
+version: "3.9"
+
+services:
+  db:
+    image: mariadb:11
+    container_name: mithrapay-db
+    restart: unless-stopped
+    environment:
+      MARIADB_ROOT_PASSWORD: rootpass
+      MARIADB_DATABASE: mithrapay_DB
+      MARIADB_USER: mithra_user
+      MARIADB_PASSWORD: mithra_pass
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+
+  redis:
+    image: redis:7-alpine
+    container_name: mithrapay-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+
+  web:
+    build: .
+    container_name: mithrapay-web
+    restart: unless-stopped
+    depends_on:
+      - db
+      - redis
+    environment:
+      FLASK_ENV: development
+      SECRET_KEY: super-secret-key
+      JWT_SECRET: super-jwt-secret
+
+      # DB (match what we put in MariaDB service)
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_USER: mithra_user
+      DB_PASS: mithra_pass
+      DB_NAME: mithrapay_DB
+
+      # Redis
+      REDIS_URL: redis://redis:6379/0
+
+      # OTP
+      OTP_EXPIRE_SECONDS: 120
+    ports:
+      - "5000:5000"
+    # if you want live reload in dev:
+    # volumes:
+    #   - .:/app
+
+volumes:
+  db_data:
