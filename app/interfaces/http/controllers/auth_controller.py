@@ -12,6 +12,11 @@ auth_bp = Blueprint("auth", __name__)
 
 @auth_bp.post("/register")
 def register():
+    """
+    Register a user with phone (and optional email/full_name).
+    No password-based login in this app.
+    After register, the client should call /auth/request-otp and /auth/verify-otp.
+    """
     db = get_db()
     try:
         user_repo = SQLAlchemyUserRepository(db)
@@ -21,7 +26,7 @@ def register():
         user = auth_service.register_user(
             phone=data.get("phone"),
             email=data.get("email"),
-            password=data.get("password"),
+            password=None,  # we ignore password for this flow
             full_name=data.get("full_name"),
         )
         return jsonify({
@@ -36,27 +41,21 @@ def register():
         db.close()
 
 
+# OPTIONAL: if someone still calls /auth/login, tell them it's not allowed
 @auth_bp.post("/login")
-def login():
-    db = get_db()
-    try:
-        user_repo = SQLAlchemyUserRepository(db)
-        auth_service = AuthService(user_repo=user_repo)
-
-        data = request.get_json() or {}
-        token = auth_service.login(
-            phone=data.get("phone"),
-            password=data.get("password"),
-        )
-        return jsonify({"access_token": token})
-    except AppError as e:
-        return jsonify(e.to_dict()), e.status_code
-    finally:
-        db.close()
+def login_disabled():
+    return jsonify({
+        "error": "password_login_disabled",
+        "message": "This API uses OTP-only authentication. Use /auth/request-otp and /auth/verify-otp."
+    }), 405
 
 
 @auth_bp.post("/request-otp")
 def request_otp():
+    """
+    Step 1: client sends phone, we generate OTP and store in Redis.
+    Same for normal users and admin users — difference is only in DB roles.
+    """
     db = get_db()
     try:
         user_repo = SQLAlchemyUserRepository(db)
@@ -68,7 +67,7 @@ def request_otp():
             return jsonify({"error": "phone is required"}), 400
 
         code = otp_service.send_otp(phone)
-        # in production don't return code
+        # NOTE: don't return code in production
         return jsonify({"message": "otp sent", "debug_code": code}), 200
     finally:
         db.close()
@@ -76,6 +75,14 @@ def request_otp():
 
 @auth_bp.post("/verify-otp")
 def verify_otp():
+    """
+    Step 2: client sends phone + code.
+    If code is valid, we:
+      - ensure user exists
+      - update is_phone_verified = True
+      - issue JWT that includes roles from DB
+    So if this phone belongs to an admin (user_roles -> admin), JWT will have roles=["admin"].
+    """
     db = get_db()
     try:
         user_repo = SQLAlchemyUserRepository(db)

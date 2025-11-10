@@ -5,12 +5,29 @@ from app.interfaces.http.controllers import get_db
 from app.infrastructure.repositories.product_sqlalchemy import SQLAlchemyProductRepository
 from app.domain.entities.product import Product
 from app.core.exceptions import AppError
+from app.core.security import decode_access_token, require_roles
 
 admin_bp = Blueprint("admin", __name__)
 
 
+def _get_claims_or_401():
+    auth_header = request.headers.get("Authorization", "")
+    if not auth_header.startswith("Bearer "):
+        return None
+    token = auth_header.split(" ", 1)[1]
+    claims = decode_access_token(token)
+    # require admin
+    require_roles(claims, ["admin"])
+    return claims
+
+
 @admin_bp.get("/products")
 def admin_list_products():
+    try:
+        _get_claims_or_401()
+    except Exception as e:
+        return jsonify({"error": "unauthorized"}), 401
+
     db = get_db()
     try:
         repo = SQLAlchemyProductRepository(db)

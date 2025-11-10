@@ -3,6 +3,7 @@ from app.infrastructure.redis.otp_store import OTPStore
 from app.domain.services.auth_service import AuthService
 from app.core import exceptions
 from app.domain.repositories.user_repository import IUserRepository
+from kavenegar import *
 
 
 class OTPService:
@@ -28,6 +29,7 @@ class OTPService:
         code = self.otp_store.generate_code()
         self.otp_store.set_code(phone, code)
         # TODO: integrate with SMS provider
+        #self.send_message(phone, code, '')
         return code
 
     def verify_otp_and_issue_token(self, phone: str, code: str) -> str:
@@ -45,3 +47,22 @@ class OTPService:
 
         token = self.auth_service.issue_token(user)
         return token
+
+
+    def send_message(phone, otp, pattern):
+        try:
+            api = KavenegarAPI(
+                '54623179656C6B4D4747443459324D33754D5235684D352B356C4C38466C2F743445346C696B393348436B3D')
+            params = {
+                'receptor': phone,
+                'template': pattern,
+                'token': otp,
+                'type': 'sms'
+            }
+            response = api.verify_lookup(params)
+            print(response)
+        except APIException as e:
+            print(e)
+        except HTTPException as e:
+            print(e)
+
