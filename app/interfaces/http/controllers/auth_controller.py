@@ -23,6 +23,7 @@ def register():
         auth_service = AuthService(user_repo=user_repo)
 
         data = request.get_json() or {}
+        print(data)
         user = auth_service.register_user(
             phone=data.get("phone"),
             email=data.get("email"),
@@ -91,6 +92,7 @@ def verify_otp():
         data = request.get_json() or {}
         phone = data.get("phone")
         code = data.get("code")
+        code = code[::-1]
 
         if not phone or not code:
             return jsonify({"error": "phone and code are required"}), 400

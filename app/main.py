@@ -1,5 +1,6 @@
 # app/main.py
 from flask import Flask, jsonify
+from flask_cors import CORS
 
 from app.core.config import settings
 from app.core.exceptions import AppError
@@ -11,6 +12,7 @@ from app.interfaces.http.routes import register_routes
 def create_app() -> Flask:
     app = Flask(__name__)
     app.config["SECRET_KEY"] = settings.SECRET_KEY
+    CORS(app, resources={r"/auth/*": {"origins": "http://localhost:5173"}}, supports_credentials=True)
 
     # -----------------------------
     # IMPORT ALL MODELS HERE
@@ -69,4 +71,5 @@ def create_app() -> Flask:
 app = create_app()
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=True, use_reloader=False)
+
