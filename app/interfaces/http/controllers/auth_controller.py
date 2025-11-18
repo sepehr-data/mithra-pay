@@ -92,7 +92,6 @@ def verify_otp():
         data = request.get_json() or {}
         phone = data.get("phone")
         code = data.get("code")
-        code = code[::-1]
 
         if not phone or not code:
             return jsonify({"error": "phone and code are required"}), 400
