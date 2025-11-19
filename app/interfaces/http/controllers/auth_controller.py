@@ -23,7 +23,6 @@ def register():
         auth_service = AuthService(user_repo=user_repo)
 
         data = request.get_json() or {}
-        print(data)
         user = auth_service.register_user(
             phone=data.get("phone"),
             email=data.get("email"),

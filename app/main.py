@@ -8,11 +8,24 @@ from app.infrastructure.db.session import engine
 from app.infrastructure.db.base import Base
 from app.interfaces.http.routes import register_routes
 
+FRONTEND_ORIGIN = 'http://localhost:5173'
 
 def create_app() -> Flask:
     app = Flask(__name__)
     app.config["SECRET_KEY"] = settings.SECRET_KEY
-    CORS(app, resources={r"/auth/*": {"origins": "http://localhost:5173"}}, supports_credentials=True)
+    # CORS(app, resources={r"/auth/*": {"origins": "http://localhost:5173"}}, supports_credentials=True)
+    CORS(
+        app,
+        resources={
+            r"/auth/*": {"origins": FRONTEND_ORIGIN},
+            r"/users/*": {"origins": FRONTEND_ORIGIN},  # 👈 add this
+            r"/products/*": {"origins": FRONTEND_ORIGIN},
+            r"/orders/*": {"origins": FRONTEND_ORIGIN},
+            r"/blog/*": {"origins": FRONTEND_ORIGIN},
+            r"/admin/*": {"origins": FRONTEND_ORIGIN},
+        },
+        supports_credentials=True,
+    )
 
     # -----------------------------
     # IMPORT ALL MODELS HERE
