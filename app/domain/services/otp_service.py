@@ -26,7 +26,8 @@ class OTPService:
         Generate + store OTP. (Integrate with SMS gateway here.)
         Returns code for debug/dev.
         """
-        code = self.otp_store.generate_code()
+        # code = self.otp_store.generate_code()
+        code = 123456
         self.otp_store.set_code(phone, code)
         # TODO: integrate with SMS provider
         #self.send_message(phone, code, '')
