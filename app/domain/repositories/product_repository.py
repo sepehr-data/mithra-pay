@@ -36,3 +36,9 @@ class IProductRepository(ABC):
     @abstractmethod
     def update(self, product: Product) -> Product:
         ...
+
+    @abstractmethod
+    def get_top_selling_products_for_last_days(
+        self, days: int, limit: int = 8
+    ) -> List[Product]:
+        ...

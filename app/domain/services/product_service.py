@@ -42,6 +42,14 @@ class ProductService:
             raise exceptions.NotFoundError("product not found")
         return prod
 
+    def get_top_selling_products_this_week(self, limit: int = 8) -> List[Product]:
+        if not self.product_repo:
+            raise RuntimeError("ProductRepository not set")
+
+        return self.product_repo.get_top_selling_products_for_last_days(
+            days=7, limit=limit
+        )
+
     # helper for controllers
     def to_dict(self, p: Product) -> dict:
         return {

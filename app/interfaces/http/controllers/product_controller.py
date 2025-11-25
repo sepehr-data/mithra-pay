@@ -30,6 +30,23 @@ def list_products():
         db.close()
 
 
+@product_bp.get("/top-weekly")
+def get_top_weekly_products():
+    db = get_db()
+    try:
+        limit = request.args.get("limit", default=8, type=int)
+
+        product_repo = SQLAlchemyProductRepository(db)
+        svc = ProductService(product_repo=product_repo)
+
+        products = svc.get_top_selling_products_this_week(limit=limit)
+        data = [svc.to_dict(p) for p in products]
+
+        return jsonify({"items": data, "count": len(data)})
+    finally:
+        db.close()
+
+
 @product_bp.get("/<int:product_id>")
 def get_product(product_id: int):
     db = get_db()
