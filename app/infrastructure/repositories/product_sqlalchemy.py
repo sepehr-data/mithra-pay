@@ -1,9 +1,12 @@
 # app/infrastructure/repositories/product_sqlalchemy.py
+from datetime import datetime, timedelta
 from typing import Optional, List
 from sqlalchemy.orm import Session
-from sqlalchemy import or_
+from sqlalchemy import or_, func
 
 from app.domain.entities.product import Product
+from app.domain.entities.order_item import OrderItem
+from app.domain.entities.order import Order
 from app.domain.repositories.product_repository import IProductRepository
 
 
@@ -61,3 +64,22 @@ class SQLAlchemyProductRepository(IProductRepository):
         self.db.commit()
         self.db.refresh(product)
         return product
+
+    def get_top_selling_products_for_last_days(
+        self, days: int, limit: int = 8
+    ) -> List[Product]:
+        cutoff_date = datetime.utcnow() - timedelta(days=days)
+
+        total_sold = func.sum(OrderItem.quantity).label("total_sold")
+
+        query = (
+            self.db.query(Product)
+            .join(OrderItem, OrderItem.product_id == Product.id)
+            .join(Order, Order.id == OrderItem.order_id)
+            .filter(Order.created_at >= cutoff_date)
+            .group_by(Product.id)
+            .order_by(total_sold.desc())
+            .limit(limit)
+        )
+
+        return query.all()
