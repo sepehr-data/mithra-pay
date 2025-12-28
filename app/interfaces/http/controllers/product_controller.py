@@ -9,6 +9,38 @@ from app.core.exceptions import AppError
 product_bp = Blueprint("products", __name__)
 
 
+@product_bp.post("/")
+def create_product():
+    db = get_db()
+    try:
+        product_repo = SQLAlchemyProductRepository(db)
+        svc = ProductService(product_repo=product_repo)
+
+        data = request.get_json() or {}
+        product = svc.create_product(
+            title=data.get("title"),
+            slug=data.get("slug"),
+            category_id=data.get("category_id"),
+            price=data.get("price"),
+            compare_at_price=data.get("compare_at_price"),
+            delivery_type=data.get("delivery_type"),
+            platform=data.get("platform"),
+            duration=data.get("duration"),
+            region=data.get("region"),
+            stock=data.get("stock"),
+            is_active=data.get("is_active", True),
+            image_url=data.get("image_url"),
+            short_description=data.get("short_description"),
+            description=data.get("description"),
+        )
+
+        return jsonify(svc.to_dict(product)), 201
+    except AppError as e:
+        return jsonify(e.to_dict()), e.status_code
+    finally:
+        db.close()
+
+
 @product_bp.get("/")
 def list_products():
     db = get_db()
