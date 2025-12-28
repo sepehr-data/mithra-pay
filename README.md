@@ -1,37 +1,38 @@
 # MithraPay Backend (Flask + MariaDB + Redis)
 
-This repository is a backend skeleton for **MithraPay** — a system that sells and manages digital subscriptions (Apple Music, Netflix, YouTube Premium, etc.), gift cards, and some physical accessories.  
-It is designed with a *clean-ish* architecture in mind:
+MithraPay is a backend skeleton for selling and managing digital subscriptions (Apple Music, Netflix, YouTube Premium, etc.), gift cards, and accessories. This repo focuses on **clean-ish architecture** with a clear separation of concerns.
 
-- **app/core** – config, security (JWT, password hashing), exceptions
-- **app/domain** – entities, repository interfaces, service layer
-- **app/infrastructure** – SQLAlchemy + MariaDB engine, Redis OTP store, concrete repository implementations
-- **app/interfaces/http** – Flask controllers (auth, products, orders, blog, admin) and route registration
-- **app/main.py** – Flask app factory
-
-You can run it locally or with Docker (MariaDB + Redis + web).
+If you are new to Python/Flask, follow the **Quick Start** section first. It uses Docker to give you a working app with minimal setup.
 
 ---
 
-## 1. Requirements
+## Table of Contents
 
-- Python 3.11 (or 3.10+)
-- MariaDB / MySQL (we tested with MariaDB Docker image)
-- Redis
-- `pip install -r requirements.txt`
-
-We use:
-
-- `Flask` for HTTP
-- `SQLAlchemy` for ORM
-- `mysql-connector-python` for MariaDB
-- `redis` for OTP storage
-- `python-dotenv` for loading `.env`
-- `PyJWT` for token generation
+1. [Tech Stack](#tech-stack)
+2. [Project Structure](#project-structure)
+3. [Quick Start (Docker)](#quick-start-docker)
+4. [Run Locally (No Docker)](#run-locally-no-docker)
+5. [Environment Variables](#environment-variables)
+6. [Database Notes](#database-notes)
+7. [Common Tasks](#common-tasks)
+8. [Available Endpoints (Current)](#available-endpoints-current)
+9. [Troubleshooting](#troubleshooting)
+10. [License](#license)
 
 ---
 
-## 2. Project Structure
+## Tech Stack
+
+- **Python 3.11+**
+- **Flask** for HTTP API
+- **SQLAlchemy** for ORM
+- **MariaDB / MySQL** database
+- **Redis** for OTP storage
+- **PyJWT** for access tokens
+
+---
+
+## Project Structure
 
 ```text
 app/
@@ -41,7 +42,9 @@ app/
     exceptions.py
   domain/
     entities/          # SQLAlchemy models
-      blog_posts.py
+      blog_post.py
+      cart.py
+      cart_item.py
       category.py
       order.py
       order_item.py
@@ -82,12 +85,13 @@ app/
     http/
       controllers/
         __init__.py
-        auth_controller.py
-        user_controller.py
-        product_controller.py
-        order_controller.py
-        blog_controller.py
         admin_controller.py
+        auth_controller.py
+        blog_controller.py
+        cart_controller.py
+        order_controller.py
+        product_controller.py
+        user_controller.py
       routes.py
   main.py              # app factory, imports models, create_all
 Dockerfile
@@ -98,9 +102,106 @@ requirements.txt
 
 ---
 
-## 3. Environment Variables
+## Quick Start (Docker)
 
-Create a `.env` in the project root:
+> **Best for beginners.** This spins up the API + MariaDB + Redis in one command.
+
+### 1) Prerequisites
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+
+### 2) Run
+
+```bash
+docker compose build
+docker compose up
+```
+
+### 3) Confirm it works
+Open http://localhost:5000 in your browser or run:
+
+```bash
+curl http://localhost:5000
+```
+
+Expected response:
+
+```json
+{
+  "app": "MithraPay backend",
+  "status": "ok",
+  "env": "development"
+}
+```
+
+The `docker-compose.yml` already sets these environment variables for you:
+
+```yaml
+DB_HOST: db
+DB_USER: mithra_user
+DB_PASS: mithra_pass
+DB_NAME: mithrapay_DB
+REDIS_URL: redis://redis:6379/0
+```
+
+---
+
+## Run Locally (No Docker)
+
+> Use this if you want to run MariaDB and Redis on your own machine.
+
+### 1) Prerequisites
+- Python 3.11+ installed
+- MariaDB (or MySQL)
+- Redis
+
+### 2) Create and activate a virtual environment
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+```
+
+### 3) Install dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### 4) Create your `.env` file
+
+Copy the example and adjust if needed:
+
+```bash
+cp .env.example .env
+```
+
+### 5) Start MariaDB + Redis
+Make sure **MariaDB** and **Redis** are running and reachable by the values in `.env`.
+
+### 6) Run the app
+
+```bash
+python -m flask --app app.main run --debug
+```
+
+Or:
+
+```bash
+python app/main.py
+```
+
+### 7) Verify
+Visit http://localhost:5000 or:
+
+```bash
+curl http://localhost:5000
+```
+
+---
+
+## Environment Variables
+
+All values are loaded from `.env` using `python-dotenv`.
 
 ```env
 # Flask
@@ -122,17 +223,14 @@ REDIS_URL=redis://localhost:6379/0
 OTP_EXPIRE_SECONDS=120
 ```
 
-> **Important:** we added `python-dotenv` and we call `load_dotenv()` in `app/core/config.py`, so these values will actually be picked up.
-
 ---
 
-## 4. Database (MariaDB) Notes
+## Database Notes
 
-We had to ensure the DB user is created with a plugin that Python drivers understand.
+- On startup, the app calls `Base.metadata.create_all(...)` to create tables automatically in **development**.
+- If you want to manage schema explicitly, you can add Alembic migrations later.
 
-If you use Docker (see below), this is done for you.
-
-If you use your own MariaDB, run:
+If you are creating your own database manually, use:
 
 ```sql
 CREATE DATABASE IF NOT EXISTS mithrapay_DB
@@ -146,88 +244,38 @@ GRANT ALL PRIVILEGES ON mithrapay_DB.* TO 'mithra_user'@'localhost';
 FLUSH PRIVILEGES;
 ```
 
-Also make sure your DB default collation is **not** `utf8mb4_0900_ai_ci` if your MariaDB is older. Use:
-
-```sql
-ALTER DATABASE mithrapay_DB
-  CHARACTER SET utf8mb4
-  COLLATE utf8mb4_unicode_ci;
-```
-
 ---
 
-## 5. Running Locally
+## Common Tasks
 
-1. Create and activate venv
-2. Install deps:
-
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-3. Make sure MariaDB and Redis are running and your `.env` is correct.
-
-4. Run:
-
-   ```bash
-   python -m flask --app app.main run --debug
-   ```
-
-   or simply
-
-   ```bash
-   python app/main.py
-   ```
-
-5. Visit: http://localhost:5000
-
-You should see:
-
-```json
-{
-  "app": "MithraPay backend",
-  "status": "ok",
-  "env": "development"
-}
-```
-
----
-
-## 6. Running with Docker
-
-We prepared a `Dockerfile` and `docker-compose.yml`.
-
-- `web` → your Flask app
-- `db` → MariaDB
-- `redis` → OTP / cache
-
-Run:
+### Create a user (example)
 
 ```bash
-docker compose build
-docker compose up
+curl -X POST http://localhost:5000/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Jane", "email": "jane@example.com", "password": "Password123"}'
 ```
 
-Then open http://localhost:5000
+### Login (example)
 
-The compose file passes these envs to the container:
-
-```yaml
-DB_HOST: db
-DB_USER: mithra_user
-DB_PASS: mithra_pass
-DB_NAME: mithrapay_DB
-REDIS_URL: redis://redis:6379/0
+```bash
+curl -X POST http://localhost:5000/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email": "jane@example.com", "password": "Password123"}'
 ```
 
 ---
 
-## 7. Available Endpoints (current)
+## Available Endpoints (Current)
+
+> These are starter endpoints you can build on.
 
 - `POST /auth/register`
 - `POST /auth/login`
 - `POST /auth/request-otp`
 - `POST /auth/verify-otp`
+- `GET /users/me`
+- `PUT /users/me`
 - `GET /products/`
 - `GET /products/<id>`
 - `POST /orders/`
@@ -237,29 +285,23 @@ REDIS_URL: redis://redis:6379/0
 - `GET /admin/products`
 - `POST /admin/products`
 - `PUT /admin/products/<id>`
-
-These are **starter** endpoints — the services and repo interfaces are ready for more.
-
----
-
-## 8. Notes on Clean Architecture
-
-- Controllers (Flask blueprints) call **services**
-- Services depend on **repository interfaces** (`app/domain/repositories/...`)
-- Infrastructure provides **concrete repos** that use SQLAlchemy
-- This lets you unit-test the services with fake repos.
+- `GET /cart/<user_id>`
+- `POST /cart/items`
+- `PUT /cart/items/<item_id>`
+- `DELETE /cart/items/<item_id>`
+- `DELETE /cart/<user_id>`
 
 ---
 
-## 9. Troubleshooting
+## Troubleshooting
 
-- **Foreign key error on startup** → make sure `app/main.py` imports *all* models before `Base.metadata.create_all(...)`.
+- **Foreign key error on startup** → ensure `app/main.py` imports *all* models before `Base.metadata.create_all(...)`.
 - **`Unknown collation: 'utf8mb4_0900_ai_ci'`** → your MariaDB is older; set collation to `utf8mb4_unicode_ci` in `maria_engine.py` *and* in the DB.
 - **`Access denied for user ...`** → DB user did not exist or wrong DB name; create DB and grant privileges as shown above.
 - **`Authentication plugin 'auth_gssapi_client'`** → create a new DB user with `mysql_native_password` (or use the provided Docker MariaDB).
 
 ---
 
-## 10. License
+## License
 
 Internal / project use.
