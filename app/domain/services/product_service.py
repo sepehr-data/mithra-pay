@@ -50,6 +50,54 @@ class ProductService:
             days=7, limit=limit
         )
 
+    def create_product(
+        self,
+        title: str,
+        slug: str,
+        category_id: int,
+        price: float,
+        compare_at_price: float | None = None,
+        delivery_type: str | None = None,
+        platform: str | None = None,
+        duration: str | None = None,
+        region: str | None = None,
+        stock: int | None = None,
+        is_active: bool = True,
+        image_url: str | None = None,
+        short_description: str | None = None,
+        description: str | None = None,
+    ) -> Product:
+        if not self.product_repo:
+            raise RuntimeError("ProductRepository not set")
+
+        if not title:
+            raise exceptions.ValidationError("title is required")
+        if not slug:
+            raise exceptions.ValidationError("slug is required")
+        if category_id is None:
+            raise exceptions.ValidationError("category_id is required")
+        if price is None:
+            raise exceptions.ValidationError("price is required")
+
+        product = Product(
+            title=title,
+            slug=slug,
+            category_id=category_id,
+            price=price,
+            compare_at_price=compare_at_price,
+            delivery_type=delivery_type,
+            platform=platform,
+            duration=duration,
+            region=region,
+            stock=stock,
+            is_active=is_active,
+            image_url=image_url,
+            short_description=short_description,
+            description=description,
+        )
+
+        return self.product_repo.create(product)
+
     # helper for controllers
     def to_dict(self, p: Product) -> dict:
         return {

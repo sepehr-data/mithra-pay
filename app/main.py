@@ -23,6 +23,7 @@ def create_app() -> Flask:
             r"/orders/*": {"origins": FRONTEND_ORIGIN},
             r"/blog/*": {"origins": FRONTEND_ORIGIN},
             r"/admin/*": {"origins": FRONTEND_ORIGIN},
+            r"/cart/*": {"origins": FRONTEND_ORIGIN},
         },
         supports_credentials=True,
     )
@@ -38,6 +39,8 @@ def create_app() -> Flask:
     from app.domain.entities.product import Product
     from app.domain.entities.order import Order
     from app.domain.entities.order_item import OrderItem
+    from app.domain.entities.cart import Cart
+    from app.domain.entities.cart_item import CartItem
     from app.domain.entities.payment import Payment
     from app.domain.entities.blog_post import BlogPost
     from app.domain.entities.setting import Setting
@@ -85,4 +88,3 @@ app = create_app()
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True, use_reloader=False)
-
