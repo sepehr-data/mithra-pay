@@ -43,11 +43,11 @@ class AuthService:
         return token
 
     def register_user(
-        self,
-        phone: str,
-        email: Optional[str] = None,
-        password: Optional[str] = None,
-        full_name: Optional[str] = None,
+            self,
+            phone: str,
+            email: Optional[str] = None,
+            password: Optional[str] = None,
+            full_name: Optional[str] = None,
     ) -> User:
         if not self.user_repo:
             raise RuntimeError("UserRepository is not set on AuthService")
@@ -61,10 +61,18 @@ class AuthService:
             if existing_email:
                 raise exceptions.ConflictError("email already registered")
 
+        first_name = None
+        last_name = None
+        if full_name:
+            parts = full_name.strip().split(" ", 1)
+            first_name = parts[0] if parts[0] else None
+            last_name = parts[1] if len(parts) > 1 and parts[1] else None
+
         user = User(
             phone=phone,
             email=email,
-            full_name=full_name,
+            first_name=first_name,
+            last_name=last_name,
             is_active=True,
             is_phone_verified=False,
         )
@@ -73,6 +81,10 @@ class AuthService:
             user.password_hash = hash_password(password)
 
         created = self.user_repo.create(user)
+
+        if hasattr(self.user_repo, "ensure_role"):
+            self.user_repo.ensure_role(created.id, "user")
+
         return created
 
     def login(self, phone: str, password: str) -> str:
@@ -103,12 +115,17 @@ class AuthService:
             raise RuntimeError("UserRepository is not set on AuthService")
 
         user = self.user_repo.get_by_phone(phone)
-        if user:
-            return user
 
-        new_user = User(
-            phone=phone,
-            is_active=True,
-            is_phone_verified=False,
-        )
-        return self.user_repo.create(new_user)
+        if not user:
+            user = User(
+                phone=phone,
+                is_active=True,
+                is_phone_verified=False,
+            )
+            user = self.user_repo.create(user)
+
+        if hasattr(self.user_repo, "ensure_role"):
+            self.user_repo.ensure_role(user.id, "user")
+
+        return user
+

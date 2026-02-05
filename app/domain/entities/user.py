@@ -1,5 +1,6 @@
+# app/domain/entities/user.py
 from datetime import datetime
-from sqlalchemy import Column, Integer, String, Boolean, DateTime
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, Date
 from app.infrastructure.db.base import Base
 
 
@@ -13,6 +14,11 @@ class User(Base):
 
     phone = Column(String(32), unique=True, index=True, nullable=False)
     email = Column(String(255), unique=True, index=True, nullable=True)
+
+    national_id = Column(String(32), nullable=True)
+    bank_number = Column(String(64), nullable=True)
+    sheba = Column(String(64), nullable=True)
+    birthday = Column(Date, nullable=True)
 
     password_hash = Column(String(255), nullable=True)
     is_active = Column(Boolean, default=True)

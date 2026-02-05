@@ -47,6 +47,7 @@ class OTPService:
             self.auth_service.user_repo.update(user)
 
         token = self.auth_service.issue_token(user)
+        print(token)
         return token
 
 

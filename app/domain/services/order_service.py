@@ -102,3 +102,19 @@ class OrderService:
             "currency": order.currency,
             "created_at": order.created_at.isoformat() if order.created_at else None,
         }
+
+    def orders_to_list(self, orders: List[Order]) -> list[dict]:
+        return [self.to_dict(o) for o in orders]
+
+    def get_all_orders(self) -> List[Order]:
+        if not self.order_repo:
+            raise RuntimeError("OrderService repositories not set")
+
+        orders = self.order_repo.get_all_orders()
+        return orders
+
+    def list_by_user(self, user_id: int, limit: int = 50, offset: int = 0) -> List[Order]:
+        if not self.order_repo:
+            raise RuntimeError("OrderService repositories not set")
+
+        return self.order_repo.list_by_user(user_id=user_id, limit=limit, offset=offset)

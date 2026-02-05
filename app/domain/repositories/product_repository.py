@@ -1,4 +1,3 @@
-# app/domain/repositories/product_repository.py
 from abc import ABC, abstractmethod
 from typing import Optional, List
 from app.domain.entities.product import Product
@@ -26,7 +25,22 @@ class IProductRepository(ABC):
         is_active: Optional[bool] = True,
         limit: int = 50,
         offset: int = 0,
+        duration_type_id: Optional[int] = None,
+        subscription_type_id: Optional[int] = None,
+        personal_account: Optional[bool] = None,
     ) -> List[Product]:
+        ...
+
+    @abstractmethod
+    def count_products(
+        self,
+        category_id: Optional[int] = None,
+        search: Optional[str] = None,
+        is_active: Optional[bool] = None,
+        duration_type_id: Optional[int] = None,
+        subscription_type_id: Optional[int] = None,
+        personal_account: Optional[bool] = None,
+    ) -> int:
         ...
 
     @abstractmethod

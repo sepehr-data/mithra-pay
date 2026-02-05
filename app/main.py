@@ -34,7 +34,7 @@ def create_app() -> Flask:
     from app.domain.entities.user import User
     from app.domain.entities.role import Role
     from app.domain.entities.user_role import UserRole
-    from app.domain.entities.category import Category
+    from app.domain.entities.product_category import Category
     from app.domain.entities.product import Product
     from app.domain.entities.order import Order
     from app.domain.entities.order_item import OrderItem

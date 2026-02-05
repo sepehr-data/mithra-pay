@@ -10,6 +10,7 @@ class Order(Base):
     order_number = Column(String(50), unique=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), index=True)
     status = Column(String(50), default="PENDING")          # PENDING, PAID, CANCELLED, FULFILLED
+    admin_status = Column(String(50), default="OPEN")  # OPEN, REVIEWING, CLOSED
     payment_status = Column(String(50), default="UNPAID")   # UNPAID, PAID, FAILED
     total_amount = Column(DECIMAL(10, 2), default=0)
     currency = Column(String(10), default="IRR")

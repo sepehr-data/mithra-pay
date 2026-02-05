@@ -1,5 +1,5 @@
 # app/domain/services/content_service.py
-from typing import List, Optional
+from typing import List
 from app.domain.repositories.blog_repository import IBlogRepository
 from app.domain.entities.blog_post import BlogPost
 from app.core import exceptions
@@ -25,14 +25,23 @@ class ContentService:
             raise exceptions.NotFoundError("post not found")
         return post
 
-    # helper
     def to_dict(self, p: BlogPost) -> dict:
+
         return {
             "id": p.id,
             "title": p.title,
             "slug": p.slug,
-            "excerpt": p.excerpt,
-            "content": p.content,
-            "cover_image": p.cover_image,
-            "published_at": p.published_at.isoformat() if p.published_at else None,
+            "excerpt": getattr(p, "excerpt", None),
+            "content": getattr(p, "content", None),
+            "cover_image": getattr(p, "cover_image", None),
+
+            "is_published": getattr(p, "is_published", False),
+            "author_name": getattr(p, "author_name", None),
+            "created_at": p.created_at.isoformat() if getattr(p, "created_at", None) else None,
+            "updated_at": p.updated_at.isoformat() if getattr(p, "updated_at", None) else None,
+
+            "category_id": getattr(p, "category_id", None),
+
+            # published_at
+            "published_at": p.published_at.isoformat() if getattr(p, "published_at", None) else None,
         }

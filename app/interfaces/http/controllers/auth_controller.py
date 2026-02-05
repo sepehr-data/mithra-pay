@@ -87,7 +87,6 @@ def verify_otp():
     try:
         user_repo = SQLAlchemyUserRepository(db)
         otp_service = OTPService(user_repo=user_repo)
-
         data = request.get_json() or {}
         phone = data.get("phone")
         code = data.get("code")
@@ -101,3 +100,5 @@ def verify_otp():
         return jsonify(e.to_dict()), e.status_code
     finally:
         db.close()
+
+

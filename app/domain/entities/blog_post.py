@@ -1,6 +1,7 @@
 from datetime import datetime
-from sqlalchemy import Column, Integer, String, Boolean, DateTime, Text
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, Text, ForeignKey
 from app.infrastructure.db.base import Base
+from sqlalchemy.orm import relationship
 
 
 class BlogPost(Base):
@@ -14,5 +15,9 @@ class BlogPost(Base):
     cover_image = Column(String(500))
     is_published = Column(Boolean, default=False)
     published_at = Column(DateTime)
+    author_name = Column(String(128), nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    category_id = Column(Integer, ForeignKey("blog_category.id", ondelete="SET NULL"), nullable=True)
+    category = relationship("BlogCategory", back_populates="posts")

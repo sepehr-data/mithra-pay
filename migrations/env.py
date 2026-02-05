@@ -2,6 +2,23 @@ from logging.config import fileConfig
 
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
+from app.infrastructure.db.base import Base
+
+from app.domain.entities.user import User
+from app.domain.entities.product import Product
+from app.domain.entities.cart import Cart
+from app.domain.entities.cart_item import CartItem
+from app.domain.entities.product_category import Category
+from app.domain.entities.order_item import OrderItem
+from app.domain.entities.order import Order
+from app.domain.entities.product import Product
+from app.domain.entities.role import Role
+from app.domain.entities.payment import Payment
+from app.domain.entities.setting import Setting
+from app.domain.entities.ticket import Ticket
+from app.domain.entities.banner import Banner
+from app.domain.entities.blog_post import BlogPost
+from app.domain.entities.user_role import UserRole
 
 from alembic import context
 
@@ -18,7 +35,7 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-target_metadata = None
+target_metadata = Base.metadata
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:

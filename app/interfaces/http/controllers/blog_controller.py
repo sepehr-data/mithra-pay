@@ -6,8 +6,7 @@ from app.infrastructure.repositories.blog_sqlalchemy import SQLAlchemyBlogReposi
 from app.domain.services.content_service import ContentService
 from app.core.exceptions import AppError
 
-blog_bp = Blueprint("blog", __name__)
-
+blog_bp = Blueprint("blogs", __name__)
 
 @blog_bp.get("/")
 def list_posts():

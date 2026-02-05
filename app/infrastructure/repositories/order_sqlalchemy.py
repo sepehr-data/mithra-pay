@@ -11,6 +11,9 @@ class SQLAlchemyOrderRepository(IOrderRepository):
     def __init__(self, db: Session):
         self.db = db
 
+    def get_all_orders(self) -> List[Order]:
+        return self.db.query(Order).all()
+
     def get_by_id(self, order_id: int) -> Optional[Order]:
         return self.db.query(Order).filter(Order.id == order_id).first()
 

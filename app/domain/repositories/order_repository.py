@@ -12,6 +12,10 @@ class IOrderRepository(ABC):
     """
 
     @abstractmethod
+    def get_all_orders(self) -> List[Order]:
+        ...
+
+    @abstractmethod
     def get_by_id(self, order_id: int) -> Optional[Order]:
         ...
 
