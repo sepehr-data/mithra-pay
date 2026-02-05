@@ -7,7 +7,6 @@ Create Date: 2026-01-05
 from typing import Sequence, Union
 from alembic import op
 
-# revision identifiers, used by Alembic.
 revision: str = "20260105_add_user_profile_fields"
 down_revision: Union[str, Sequence[str], None] = "c11685a7fd86"
 branch_labels: Union[str, Sequence[str], None] = None

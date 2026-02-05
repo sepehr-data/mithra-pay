@@ -65,3 +65,4 @@ def require_roles(claims: dict, allowed: List[str]):
 
     if not any(r in token_roles for r in allowed):
         raise UnauthorizedError("insufficient role")
+

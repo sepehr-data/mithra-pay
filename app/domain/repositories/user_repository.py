@@ -5,10 +5,6 @@ from app.domain.entities.user import User
 from app.domain.entities.role import Role
 
 class IUserRepository(ABC):
-    """
-    User repository interface.
-    Domain services depend on this, not on SQLAlchemy directly.
-    """
 
     @abstractmethod
     def get_by_id(self, user_id: int) -> Optional[User]:
@@ -36,8 +32,4 @@ class IUserRepository(ABC):
 
     @abstractmethod
     def get_roles(self, user_id: int) -> List[Role]:
-        """
-        Return all roles for a user.
-        Needed to embed roles into JWT.
-        """
         ...

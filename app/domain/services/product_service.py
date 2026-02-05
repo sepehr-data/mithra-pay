@@ -106,12 +106,10 @@ class ProductService:
             delivery_type=delivery_type,
             platform=platform,
 
-            # ✅ NEW fields
             duration_type_id=duration_type_id,
             subscription_type_id=subscription_type_id,
             personal_account=personal_account,
 
-            # ⚠️ legacy fields
             duration=duration,
             subscription_type=subscription_type,
 

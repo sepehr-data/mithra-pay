@@ -41,3 +41,4 @@ class ValidationError(AppError):
 class ConflictError(AppError):
     status_code = 409
     error_code = "conflict"
+

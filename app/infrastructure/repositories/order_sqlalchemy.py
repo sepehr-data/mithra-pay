@@ -31,11 +31,9 @@ class SQLAlchemyOrderRepository(IOrderRepository):
         )
 
     def create_order(self, order: Order, items: List[OrderItem]) -> Order:
-        """
-        Persist order and its items in one transaction.
-        """
+
         self.db.add(order)
-        self.db.flush()  # so order.id is available
+        self.db.flush()
 
         for it in items:
             it.order_id = order.id

@@ -50,3 +50,4 @@ class SQLAlchemyTicketRepository(ITicketRepository):
         self.db.refresh(ticket)
         return ticket
 
+

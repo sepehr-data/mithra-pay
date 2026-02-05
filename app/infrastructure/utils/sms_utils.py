@@ -23,6 +23,7 @@ def send_otp_message(phone, otp, pattern):
 def send_notification(phone, pattern, token):
     try:
 
+
         """
         # کد واقعی ارسال پیامک هنوز غیرفعال است
         params = {

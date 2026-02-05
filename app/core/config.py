@@ -22,5 +22,4 @@ class Settings:
     OTP_EXPIRE_SECONDS: int = int(os.getenv("OTP_EXPIRE_SECONDS", "120"))
     ENV: str = os.getenv("FLASK_ENV", "development")
 
-
 settings = Settings()

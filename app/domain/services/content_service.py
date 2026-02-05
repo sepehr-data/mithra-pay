@@ -42,6 +42,5 @@ class ContentService:
 
             "category_id": getattr(p, "category_id", None),
 
-            # published_at
             "published_at": p.published_at.isoformat() if getattr(p, "published_at", None) else None,
         }

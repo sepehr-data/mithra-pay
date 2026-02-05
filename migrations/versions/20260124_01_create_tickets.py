@@ -8,7 +8,6 @@ Create Date: 2026-01-24 14:00:00.000000
 from alembic import op
 import sqlalchemy as sa
 
-# revision identifiers, used by Alembic.
 revision = '20260124_01_create_tickets'
 down_revision = None
 branch_labels = None

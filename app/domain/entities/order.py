@@ -16,3 +16,4 @@ class Order(Base):
     currency = Column(String(10), default="IRR")
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+

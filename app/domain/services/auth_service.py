@@ -5,14 +5,9 @@ from app.core import exceptions
 from app.core.security import hash_password, verify_password, create_access_token
 from app.domain.entities.user import User
 from app.domain.repositories.user_repository import IUserRepository
-from app.domain.entities.role import Role
 
 
 class AuthService:
-    """
-    Handles register/login and token issuing.
-    This service needs a concrete IUserRepository injected.
-    """
 
     def __init__(self, user_repo: IUserRepository | None = None):
         self.user_repo = user_repo
@@ -22,9 +17,7 @@ class AuthService:
 
     # ---- internal helper ----------
     def _get_user_roles(self, user_id: int) -> List[str]:
-        """
-        Ask the repo for Role objects and return list of names.
-        """
+
         if not self.user_repo:
             return []
         roles = self.user_repo.get_roles(user_id)
@@ -101,13 +94,10 @@ class AuthService:
         if not verify_password(password, user.password_hash):
             raise exceptions.UnauthorizedError("invalid credentials")
 
-        # <-- here: issue token with roles
         return self._issue_token_with_roles(user)
 
     def issue_token(self, user: User) -> str:
-        """
-        Used by OTP flow (we also want roles here)
-        """
+
         return self._issue_token_with_roles(user)
 
     def ensure_user_by_phone(self, phone: str) -> User:

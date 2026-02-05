@@ -11,3 +11,4 @@ class UserRole(Base):
     __table_args__ = (
         UniqueConstraint("user_id", "role_id", name="uq_user_role"),
     )
+

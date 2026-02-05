@@ -17,3 +17,4 @@ class BlogCategory(Base):
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     posts = relationship("BlogPost", back_populates="category")
+

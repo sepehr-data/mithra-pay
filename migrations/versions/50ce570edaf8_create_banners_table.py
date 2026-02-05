@@ -9,7 +9,6 @@ from alembic import op
 import sqlalchemy as sa
 from datetime import datetime
 
-# revision identifiers, used by Alembic.
 revision = 'abc123def456'
 down_revision = 'e5a331e98c35'
 branch_labels = None

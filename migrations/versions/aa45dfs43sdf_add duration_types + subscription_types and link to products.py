@@ -10,8 +10,6 @@ from typing import Sequence, Union
 from alembic import op
 import sqlalchemy as sa
 
-
-# revision identifiers, used by Alembic.
 revision: str = "4f9a8b2c1d0e"
 down_revision: Union[str, None] = "c761268fd583"
 branch_labels: Union[str, Sequence[str], None] = None
@@ -22,8 +20,8 @@ def upgrade() -> None:
     # 1) duration_types (hardcoded)
     op.create_table(
         "duration_types",
-        sa.Column("code", sa.String(100), primary_key=True),  # e.g. 1_month
-        sa.Column("title", sa.String(100), nullable=False),   # e.g. 1 ماهه
+        sa.Column("code", sa.String(100), primary_key=True),
+        sa.Column("title", sa.String(100), nullable=False),
     )
 
     op.execute(sa.text("""
@@ -61,14 +59,12 @@ def upgrade() -> None:
     )
 
     # personal_account boolean
-    # server_default برای بک‌فیل رکوردهای قدیمی
     op.add_column(
         "products",
         sa.Column("personal_account", sa.Boolean(), nullable=False, server_default=sa.text("0")),
     )
 
     # 4) FK: products.duration -> duration_types.code
-    # duration از قبل وجود دارد و String(100) است
     op.create_foreign_key(
         "fk_products_duration_types",
         "products",
@@ -89,9 +85,6 @@ def upgrade() -> None:
         onupdate="CASCADE",
         ondelete="RESTRICT",
     )
-
-    # 6) Optional: بعد از بک‌فیل، اگر دوست داشتی server_default رو برداری (اختیاری)
-    # op.alter_column("products", "personal_account", server_default=None)
 
 
 def downgrade() -> None:

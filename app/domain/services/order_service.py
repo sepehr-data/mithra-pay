@@ -33,12 +33,7 @@ class OrderService:
         self.product_repo = product_repo
 
     def create_order(self, user_id: int, items: List[Dict[str, Any]]) -> Order:
-        """
-        items = [
-            {"product_id": 1, "quantity": 2},
-            ...
-        ]
-        """
+
         if not self.order_repo or not self.product_repo:
             raise RuntimeError("OrderService repositories not set")
 

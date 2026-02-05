@@ -16,5 +16,4 @@ class SubscriptionType(Base):
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
 
-    # رابطه به محصولات
     products = relationship("Product", back_populates="subscription_type_rel")

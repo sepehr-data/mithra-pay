@@ -5,10 +5,6 @@ from .redis_client import redis_client
 
 
 class OTPStore:
-    """
-    Small helper around Redis for OTPs.
-    Key format: otp:{phone}
-    """
 
     def __init__(self, ttl: int | None = None):
         self.ttl = ttl or settings.OTP_EXPIRE_SECONDS
@@ -27,7 +23,6 @@ class OTPStore:
         if not saved:
             return False
         if saved.decode() == code:
-            # consume it
             redis_client.delete(key)
             return True
         return False

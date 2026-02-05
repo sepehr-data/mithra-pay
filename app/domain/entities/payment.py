@@ -15,3 +15,4 @@ class Payment(Base):
     tracking_code = Column(String(255))
     raw_response = Column(Text)
     created_at = Column(DateTime, default=datetime.utcnow)
+

@@ -65,3 +65,4 @@ class UserService:
             "sheba": getattr(user, "sheba", None),
             "bank_number": getattr(user, "bank_number", None),
         }
+

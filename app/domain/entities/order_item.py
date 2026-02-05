@@ -12,3 +12,4 @@ class OrderItem(Base):
     unit_price = Column(DECIMAL(10, 2), nullable=False)
     quantity = Column(Integer, default=1)
     line_total = Column(DECIMAL(10, 2), nullable=False)
+

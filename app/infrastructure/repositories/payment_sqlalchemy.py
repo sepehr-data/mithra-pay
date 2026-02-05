@@ -32,3 +32,4 @@ class SQLAlchemyPaymentRepository(IPaymentRepository):
         self.db.commit()
         self.db.refresh(payment)
         return payment
+

@@ -18,3 +18,4 @@ class DurationType(Base):
 
     # رابطه به محصولات
     products = relationship("Product", back_populates="duration_type")
+

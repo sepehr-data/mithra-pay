@@ -50,3 +50,4 @@ class IProductRepository(ABC):
     @abstractmethod
     def update(self, product: Product) -> Product:
         ...
+

@@ -14,11 +14,10 @@ class Ticket(Base):
     order_number = Column(String(100), nullable=True)
     message = Column(Text, nullable=False)
 
-    # وضعیت تیکت: OPEN, IN_PROGRESS, CLOSED
+    # OPEN, IN_PROGRESS, CLOSED
     status = Column(String(50), default="open")
     accepted_policy = Column(Boolean, default=False)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
-    # در صورت نیاز به ربط با کاربر ثبت‌نام شده
     user_id = Column(Integer, ForeignKey("users.id"), nullable=True)

@@ -57,3 +57,4 @@ class SQLAlchemyBannerRepository(IBannerRepository):
 
         self.db.delete(banner)
         self.db.commit()
+

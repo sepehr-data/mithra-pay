@@ -33,3 +33,4 @@ class IBannerRepository(ABC):
     @abstractmethod
     def delete(self, banner_id: int) -> None:
         ...
+

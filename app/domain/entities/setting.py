@@ -9,3 +9,4 @@ class Setting(Base):
     key = Column(String(255), unique=True, nullable=False)
     value = Column(Text, nullable=False)
     description = Column(String(255))
+

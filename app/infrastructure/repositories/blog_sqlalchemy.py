@@ -2,7 +2,6 @@
 from typing import Optional, List
 from sqlalchemy.orm import Session
 from sqlalchemy import case
-
 from app.domain.entities.blog_post import BlogPost
 from app.domain.entities.blog_category import BlogCategory
 from app.domain.entities.blog_post import BlogPost as BlogPostModel

@@ -21,3 +21,4 @@ class BlogPost(Base):
 
     category_id = Column(Integer, ForeignKey("blog_category.id", ondelete="SET NULL"), nullable=True)
     category = relationship("BlogCategory", back_populates="posts")
+

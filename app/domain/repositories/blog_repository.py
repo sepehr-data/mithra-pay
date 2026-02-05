@@ -33,3 +33,4 @@ class IBlogRepository(ABC):
     @abstractmethod
     def update(self, post: BlogPost) -> BlogPost:
         ...
+

@@ -25,3 +25,4 @@ class IPaymentRepository(ABC):
     @abstractmethod
     def update(self, payment: Payment) -> Payment:
         ...
+

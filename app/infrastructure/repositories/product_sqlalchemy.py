@@ -67,7 +67,6 @@ class SQLAlchemyProductRepository(IProductRepository):
 
         if search:
             like = f"%{search}%"
-            # نکته: ممکنه platform بعضی رکوردها NULL باشه
             q = q.filter(
                 or_(
                     Product.title.ilike(like),
@@ -154,7 +153,6 @@ class SQLAlchemyProductRepository(IProductRepository):
             .limit(limit)
         )
 
-        # eager load if relationships exist
         if hasattr(Product, "duration_type"):
             q = q.options(joinedload(Product.duration_type))
         if hasattr(Product, "subscription_type_rel"):

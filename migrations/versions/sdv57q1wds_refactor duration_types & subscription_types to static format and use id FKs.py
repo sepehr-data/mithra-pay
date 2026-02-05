@@ -147,7 +147,6 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
-    # downgrade (تقریبی) — برمی‌گردونه به ساختار قبلی code-based
     op.drop_constraint("fk_products_subscription_type_id", "products", type_="foreignkey")
     op.drop_constraint("fk_products_duration_type_id", "products", type_="foreignkey")
 

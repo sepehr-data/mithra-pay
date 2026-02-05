@@ -7,11 +7,6 @@ from kavenegar import *
 
 
 class OTPService:
-    """
-    High-level OTP flow:
-    - send_otp(phone)
-    - verify_otp_and_issue_token(phone, code)
-    """
 
     def __init__(
         self,
@@ -38,11 +33,8 @@ class OTPService:
         if not ok:
             raise exceptions.UnauthorizedError("invalid or expired otp")
 
-        # ensure user exists
         user = self.auth_service.ensure_user_by_phone(phone)
-        # mark verified? -> you can update user here via repo
         user.is_phone_verified = True
-        # persist this change
         if self.auth_service.user_repo:
             self.auth_service.user_repo.update(user)
 

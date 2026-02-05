@@ -28,3 +28,4 @@ def upgrade() -> None:
 def downgrade() -> None:
     """Downgrade schema."""
     op.drop_column('blog_posts', 'author_name')
+

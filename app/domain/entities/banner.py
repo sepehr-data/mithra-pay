@@ -12,3 +12,4 @@ class Banner(Base):
     status = Column(String(50), default="ACTIVE")
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+

@@ -41,3 +41,4 @@ class IOrderRepository(ABC):
     @abstractmethod
     def update(self, order: Order) -> Order:
         ...
+

@@ -67,10 +67,7 @@ class SQLAlchemyUserRepository(IUserRepository):
         return [r[0] for r in rows]
 
     def ensure_role(self, user_id: int, role_name: str = "user") -> None:
-        """
-        Ensure user has (user_id, role_id) link for role_name.
-        roles table is hard-coded; if missing, raise.
-        """
+
         role = self.db.query(Role).filter(Role.name == role_name).first()
         if not role:
             raise RuntimeError(f"role '{role_name}' not found in roles table")
@@ -87,10 +84,7 @@ class SQLAlchemyUserRepository(IUserRepository):
         self.db.commit()
 
     def remove_role(self, user_id: int, role_name: str) -> bool:
-        """
-        Remove (user_id, role_id) link if exists.
-        Returns True if removed, False if not existed.
-        """
+
         role = self.db.query(Role).filter(Role.name == role_name).first()
         if not role:
             raise RuntimeError(f"role '{role_name}' not found in roles table")
@@ -110,9 +104,7 @@ class SQLAlchemyUserRepository(IUserRepository):
     # ---------- Admin helpers ----------
 
     def set_admin_by_phone(self, phone: str) -> User:
-        """
-        Ensure user has 'admin' role by phone.
-        """
+
         user = self.get_by_phone(phone)
         if not user:
             raise RuntimeError("user_not_found")
@@ -122,11 +114,7 @@ class SQLAlchemyUserRepository(IUserRepository):
         return user
 
     def remove_admin_by_phone(self, phone: str) -> User:
-        """
-        Remove 'admin' role from user by phone.
-        - If user is not found => user_not_found
-        - If user doesn't have admin role => not_admin
-        """
+
         user = self.get_by_phone(phone)
         if not user:
             raise RuntimeError("user_not_found")
@@ -139,9 +127,7 @@ class SQLAlchemyUserRepository(IUserRepository):
         return user
 
     def list_admin_users(self, limit: int = 200, offset: int = 0) -> List[User]:
-        """
-        List users that have role admin/owner.
-        """
+
         return (
             self.db.query(User)
             .join(UserRole, UserRole.user_id == User.id)
