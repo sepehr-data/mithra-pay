@@ -5,7 +5,6 @@ from dotenv import load_dotenv
 # load the .env file at project root
 load_dotenv()
 
-
 class Settings:
     SECRET_KEY: str = os.getenv("SECRET_KEY", "super-secret-key")
     JWT_SECRET: str = os.getenv("JWT_SECRET", "super-jwt-secret")
