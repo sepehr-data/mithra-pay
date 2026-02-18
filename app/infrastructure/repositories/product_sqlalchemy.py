@@ -3,7 +3,7 @@ from typing import Optional, List
 
 from sqlalchemy.orm import Session
 from sqlalchemy import or_, func
-from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import joinedload, selectinload
 
 from app.domain.entities.product import Product
 from app.domain.entities.order_item import OrderItem
@@ -15,20 +15,28 @@ class SQLAlchemyProductRepository(IProductRepository):
     def __init__(self, db: Session):
         self.db = db
 
-    def get_by_id(self, product_id: int) -> Optional[Product]:
-        q = self.db.query(Product)
+    def _with_eagerloads(self, q):
+
         if hasattr(Product, "duration_type"):
             q = q.options(joinedload(Product.duration_type))
         if hasattr(Product, "subscription_type_rel"):
             q = q.options(joinedload(Product.subscription_type_rel))
+
+        if hasattr(Product, "subscription_types"):
+            q = q.options(selectinload(Product.subscription_types))
+        if hasattr(Product, "duration_types"):
+            q = q.options(selectinload(Product.duration_types))
+        if hasattr(Product, "plan_prices"):
+            q = q.options(selectinload(Product.plan_prices))
+
+        return q
+
+    def get_by_id(self, product_id: int) -> Optional[Product]:
+        q = self._with_eagerloads(self.db.query(Product))
         return q.filter(Product.id == product_id).first()
 
     def get_by_slug(self, slug: str) -> Optional[Product]:
-        q = self.db.query(Product)
-        if hasattr(Product, "duration_type"):
-            q = q.options(joinedload(Product.duration_type))
-        if hasattr(Product, "subscription_type_rel"):
-            q = q.options(joinedload(Product.subscription_type_rel))
+        q = self._with_eagerloads(self.db.query(Product))
         return q.filter(Product.slug == slug).first()
 
     def list_products(
@@ -42,13 +50,7 @@ class SQLAlchemyProductRepository(IProductRepository):
         subscription_type_id: Optional[int] = None,
         personal_account: Optional[bool] = None,
     ) -> List[Product]:
-        q = self.db.query(Product)
-
-        # eager load relationships if exist
-        if hasattr(Product, "duration_type"):
-            q = q.options(joinedload(Product.duration_type))
-        if hasattr(Product, "subscription_type_rel"):
-            q = q.options(joinedload(Product.subscription_type_rel))
+        q = self._with_eagerloads(self.db.query(Product))
 
         if is_active is not None:
             q = q.filter(Product.is_active == is_active)
@@ -57,10 +59,22 @@ class SQLAlchemyProductRepository(IProductRepository):
             q = q.filter(Product.category_id == category_id)
 
         if duration_type_id is not None and hasattr(Product, "duration_type_id"):
-            q = q.filter(Product.duration_type_id == duration_type_id)
+            q = q.filter(
+                or_(
+                    Product.duration_type_id == duration_type_id,
+
+                    Product.duration_types.any(id=duration_type_id) if hasattr(Product, "duration_types") else False,
+                )
+            )
 
         if subscription_type_id is not None and hasattr(Product, "subscription_type_id"):
-            q = q.filter(Product.subscription_type_id == subscription_type_id)
+            q = q.filter(
+                or_(
+                    Product.subscription_type_id == subscription_type_id,
+                    # 2) M2M match
+                    Product.subscription_types.any(id=subscription_type_id) if hasattr(Product, "subscription_types") else False,
+                )
+            )
 
         if personal_account is not None and hasattr(Product, "personal_account"):
             q = q.filter(Product.personal_account == personal_account)
@@ -100,10 +114,20 @@ class SQLAlchemyProductRepository(IProductRepository):
             q = q.filter(Product.category_id == category_id)
 
         if duration_type_id is not None and hasattr(Product, "duration_type_id"):
-            q = q.filter(Product.duration_type_id == duration_type_id)
+            q = q.filter(
+                or_(
+                    Product.duration_type_id == duration_type_id,
+                    Product.duration_types.any(id=duration_type_id) if hasattr(Product, "duration_types") else False,
+                )
+            )
 
         if subscription_type_id is not None and hasattr(Product, "subscription_type_id"):
-            q = q.filter(Product.subscription_type_id == subscription_type_id)
+            q = q.filter(
+                or_(
+                    Product.subscription_type_id == subscription_type_id,
+                    Product.subscription_types.any(id=subscription_type_id) if hasattr(Product, "subscription_types") else False,
+                )
+            )
 
         if personal_account is not None and hasattr(Product, "personal_account"):
             q = q.filter(Product.personal_account == personal_account)
@@ -153,9 +177,5 @@ class SQLAlchemyProductRepository(IProductRepository):
             .limit(limit)
         )
 
-        if hasattr(Product, "duration_type"):
-            q = q.options(joinedload(Product.duration_type))
-        if hasattr(Product, "subscription_type_rel"):
-            q = q.options(joinedload(Product.subscription_type_rel))
-
+        q = self._with_eagerloads(q)
         return q.all()

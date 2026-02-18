@@ -1,5 +1,6 @@
 # app/interfaces/http/routes.py
 from app.interfaces.http.controllers.auth_controller import auth_bp
+from app.interfaces.http.controllers.cart_controller import cart_bp
 from app.interfaces.http.controllers.user_controller import user_bp
 from app.interfaces.http.controllers.product_controller import product_bp
 from app.interfaces.http.controllers.order_controller import order_bp
@@ -22,6 +23,7 @@ def register_routes(app):
     app.register_blueprint(product_bp, url_prefix="/products", strict_slashes=False)
     app.register_blueprint(order_bp, url_prefix="/orders", strict_slashes=False)
     app.register_blueprint(blog_bp, url_prefix="/blogs", strict_slashes=False)
+    app.register_blueprint(cart_bp, url_prefix="/carts", strict_slashes=False)
     app.register_blueprint(banners_bp, url_prefix="/banners", strict_slashes=False)
     app.register_blueprint(admin_blogs_bp, url_prefix="/admin/blogs", strict_slashes=False)
     app.register_blueprint(tickets_bp, url_prefix="/tickets", strict_slashes=False)

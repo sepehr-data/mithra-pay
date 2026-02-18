@@ -2,6 +2,7 @@ from datetime import datetime
 from sqlalchemy import Column, Integer, String, Boolean, DateTime, Text
 from sqlalchemy.orm import relationship
 from app.infrastructure.db.base import Base
+from app.domain.entities.product_relations import product_subscription_types
 
 
 class SubscriptionType(Base):
@@ -16,4 +17,11 @@ class SubscriptionType(Base):
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
 
-    products = relationship("Product", back_populates="subscription_type_rel")
+    products_legacy = relationship("Product", back_populates="subscription_type_legacy")
+
+    products_m2m = relationship(
+        "Product",
+        secondary=product_subscription_types,
+        back_populates="subscription_types",
+        lazy="selectin",
+    )

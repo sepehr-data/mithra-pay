@@ -2,8 +2,7 @@ from datetime import datetime
 from sqlalchemy import Column, Integer, String, Boolean, DateTime, Text, ForeignKey, DECIMAL
 from sqlalchemy.orm import relationship
 from app.infrastructure.db.base import Base
-from app.domain.entities.subscription_types import SubscriptionType
-from app.domain.entities.duration_types import DurationType
+from app.domain.entities.product_relations import product_subscription_types, product_duration_types
 
 
 class Product(Base):
@@ -23,8 +22,29 @@ class Product(Base):
     duration_type_id = Column(Integer, ForeignKey("duration_types.id"), nullable=True, index=True)
     subscription_type_id = Column(Integer, ForeignKey("subscription_types.id"), nullable=True, index=True)
 
-    duration_type = relationship(DurationType, back_populates="products")
-    subscription_type_rel = relationship(SubscriptionType, back_populates="products")
+    duration_type_legacy = relationship("DurationType", back_populates="products_legacy")
+    subscription_type_legacy = relationship("SubscriptionType", back_populates="products_legacy")
+
+    subscription_types = relationship(
+        "SubscriptionType",
+        secondary=product_subscription_types,
+        back_populates="products_m2m",
+        lazy="selectin",
+    )
+
+    duration_types = relationship(
+        "DurationType",
+        secondary=product_duration_types,
+        back_populates="products_m2m",
+        lazy="selectin",
+    )
+
+    plan_prices = relationship(
+        "ProductPlanPrice",
+        back_populates="product",
+        cascade="all, delete-orphan",
+        lazy="selectin",
+    )
 
     personal_account = Column(Boolean, default=False, nullable=False)
 
@@ -41,4 +61,3 @@ class Product(Base):
 
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-

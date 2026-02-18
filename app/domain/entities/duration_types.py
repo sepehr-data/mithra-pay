@@ -2,6 +2,7 @@ from datetime import datetime
 from sqlalchemy import Column, Integer, String, Boolean, DateTime, Text
 from sqlalchemy.orm import relationship
 from app.infrastructure.db.base import Base
+from app.domain.entities.product_relations import product_duration_types
 
 
 class DurationType(Base):
@@ -16,6 +17,11 @@ class DurationType(Base):
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
 
-    # رابطه به محصولات
-    products = relationship("Product", back_populates="duration_type")
+    products_legacy = relationship("Product", back_populates="duration_type_legacy")
 
+    products_m2m = relationship(
+        "Product",
+        secondary=product_duration_types,
+        back_populates="duration_types",
+        lazy="selectin",
+    )

@@ -12,6 +12,8 @@ from app.domain.entities.product_category import Category
 from app.domain.entities.order_item import OrderItem
 from app.domain.entities.order import Order
 from app.domain.entities.product import Product
+from app.domain.entities.subscription_types import SubscriptionType
+from app.domain.entities.duration_types import DurationType
 from app.domain.entities.role import Role
 from app.domain.entities.payment import Payment
 from app.domain.entities.setting import Setting
@@ -19,6 +21,8 @@ from app.domain.entities.ticket import Ticket
 from app.domain.entities.banner import Banner
 from app.domain.entities.blog_post import BlogPost
 from app.domain.entities.user_role import UserRole
+from app.domain.entities.blog_category import BlogCategory
+
 
 from alembic import context
 
